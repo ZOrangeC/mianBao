@@ -1,4 +1,4 @@
-package com.orange.mianbao.model.dto.questionBank;
+package com.orange.mianbao.model.dto.questionBankQuestion;
 
 import com.orange.mianbao.common.PageRequest;
 import lombok.Data;
@@ -8,14 +8,14 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 查询题库请求
+ * 查询题库题目关联请求
  *
  * @author <a href="https://github.com/liyupi">程序员鱼皮</a>
  * @from <a href="https://www.code-nav.cn">编程导航学习圈</a>
  */
 @EqualsAndHashCode(callSuper = true)
 @Data
-public class QuestionBankQueryRequest extends PageRequest implements Serializable {
+public class QuestionBankQuestionQueryRequest extends PageRequest implements Serializable {
 
     /**
      * id
@@ -32,31 +32,25 @@ public class QuestionBankQueryRequest extends PageRequest implements Serializabl
      */
     private String searchText;
 
-
     /**
      * 标题
      */
     private String title;
 
     /**
-     * 描述
+     * 内容
      */
-    private String description;
+    private String content;
 
     /**
-     * 图片
+     * 标签列表
      */
-    private String picture;
+    private List<String> tags;
 
     /**
      * 创建用户 id
      */
     private Long userId;
-
-    /**
-     *是否要关联查询题目列表
-     */
-    private boolean needQueryQuestionList;
 
     private static final long serialVersionUID = 1L;
 }
