@@ -1,4 +1,4 @@
-package com.orange.mianbao.manager;
+package com.orange.mianbao.mapper.manager;
 
 import com.qcloud.cos.COSClient;
 import com.qcloud.cos.model.PutObjectRequest;

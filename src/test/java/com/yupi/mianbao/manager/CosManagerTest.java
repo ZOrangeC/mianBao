@@ -1,4 +1,4 @@
-package com.orange.mianbao.manager;
+package com.orange.mianbao.mapper.manager;
 
 import javax.annotation.Resource;
 import org.junit.jupiter.api.Test;

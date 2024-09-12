@@ -6,7 +6,7 @@ import com.orange.mianbao.common.ErrorCode;
 import com.orange.mianbao.common.ResultUtils;
 import com.orange.mianbao.constant.FileConstant;
 import com.orange.mianbao.exception.BusinessException;
-import com.orange.mianbao.manager.CosManager;
+import com.orange.mianbao.mapper.manager.CosManager;
 import com.orange.mianbao.model.dto.file.UploadFileRequest;
 import com.orange.mianbao.model.entity.User;
 import com.orange.mianbao.model.enums.FileUploadBizEnum;
