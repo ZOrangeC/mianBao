@@ -6,8 +6,11 @@ import com.orange.mianbao.model.dto.user.UserQueryRequest;
 import com.orange.mianbao.model.entity.User;
 import com.orange.mianbao.model.vo.LoginUserVO;
 import com.orange.mianbao.model.vo.UserVO;
+
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+
 import me.chanjar.weixin.common.bean.WxOAuth2UserInfo;
 
 /**
@@ -117,5 +120,21 @@ public interface UserService extends IService<User> {
      * @return
      */
     QueryWrapper<User> getQueryWrapper(UserQueryRequest userQueryRequest);
+
+    /**
+     * 添加用户签到
+     * @param userId
+     * @return
+     */
+    boolean addUserSignIn(long userId);
+
+    /**
+     * 获取用户某年签到记录
+     *
+     * @param userId
+     * @param year
+     * @return
+     */
+    List<Integer> getUserSignInRecord(long userId, Integer year);
 
 }

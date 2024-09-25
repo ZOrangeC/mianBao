@@ -19,6 +19,7 @@ import com.orange.mianbao.model.entity.QuestionBank;
 import com.orange.mianbao.model.entity.QuestionBankQuestion;
 import com.orange.mianbao.model.entity.User;
 import com.orange.mianbao.model.vo.QuestionBankVO;
+import com.orange.mianbao.model.vo.QuestionVO;
 import com.orange.mianbao.service.QuestionBankService;
 import com.orange.mianbao.service.QuestionService;
 import com.orange.mianbao.service.UserService;
@@ -106,6 +107,8 @@ public class QuestionBankController {
         return ResultUtils.success(true);
     }
 
+
+
     /**
      * 更新题库（仅管理员可用）
      *
@@ -113,7 +116,6 @@ public class QuestionBankController {
      * @return
      */
     @PostMapping("/update")
-
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<Boolean> updateQuestionBank(@RequestBody QuestionBankUpdateRequest questionBankUpdateRequest) {
         if (questionBankUpdateRequest == null || questionBankUpdateRequest.getId() <= 0) {
@@ -133,6 +135,7 @@ public class QuestionBankController {
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
     }
+
 
     /**
      * 根据 id 获取题库（封装类）
@@ -155,8 +158,12 @@ public class QuestionBankController {
         if(needQueryQuestionList){
             QuestionQueryRequest questionQueryRequest = new QuestionQueryRequest();
             questionQueryRequest.setQuestionBankId(id);
+            //可以按需支持更多的题目搜索参数，比如分页
+            questionQueryRequest.setPageSize(questionBankQueryRequest.getPageSize());
+            questionQueryRequest.setCurrent(questionBankQueryRequest.getCurrent());
             Page<Question> questionPage = questionService.listQuestionByPage(questionQueryRequest);
-            questionBankVO.setQuestionPage(questionPage);
+            Page<QuestionVO> questionVOPage = questionService.getQuestionVOPage(questionPage, request);
+            questionBankVO.setQuestionPage(questionVOPage);
         }
 
         // 获取封装类
@@ -180,6 +187,7 @@ public class QuestionBankController {
         return ResultUtils.success(questionBankPage);
     }
 
+
     /**
      * 分页获取题库列表（封装类）
      *
@@ -189,11 +197,11 @@ public class QuestionBankController {
      */
     @PostMapping("/list/page/vo")
     public BaseResponse<Page<QuestionBankVO>> listQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
-                                                               HttpServletRequest request) {
+                                                                       HttpServletRequest request) {
         long current = questionBankQueryRequest.getCurrent();
         long size = questionBankQueryRequest.getPageSize();
-        // 限制爬虫
-        ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        // TODO 限制爬虫
+        ThrowUtils.throwIf(size > 200, ErrorCode.PARAMS_ERROR);
         // 查询数据库
         Page<QuestionBank> questionBankPage = questionBankService.page(new Page<>(current, size),
                 questionBankService.getQueryWrapper(questionBankQueryRequest));
@@ -210,7 +218,7 @@ public class QuestionBankController {
      */
     @PostMapping("/my/list/page/vo")
     public BaseResponse<Page<QuestionBankVO>> listMyQuestionBankVOByPage(@RequestBody QuestionBankQueryRequest questionBankQueryRequest,
-                                                                 HttpServletRequest request) {
+                                                                         HttpServletRequest request) {
         ThrowUtils.throwIf(questionBankQueryRequest == null, ErrorCode.PARAMS_ERROR);
         // 补充查询条件，只查询当前登录用户的数据
         User loginUser = userService.getLoginUser(request);
