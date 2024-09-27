@@ -10,10 +10,7 @@ import com.orange.mianbao.common.ResultUtils;
 import com.orange.mianbao.constant.UserConstant;
 import com.orange.mianbao.exception.BusinessException;
 import com.orange.mianbao.exception.ThrowUtils;
-import com.orange.mianbao.model.dto.question.QuestionAddRequest;
-import com.orange.mianbao.model.dto.question.QuestionEditRequest;
-import com.orange.mianbao.model.dto.question.QuestionQueryRequest;
-import com.orange.mianbao.model.dto.question.QuestionUpdateRequest;
+import com.orange.mianbao.model.dto.question.*;
 import com.orange.mianbao.model.entity.Question;
 
 import com.orange.mianbao.model.entity.User;
@@ -264,5 +261,15 @@ public class QuestionController {
         Page<Question> questionPage = questionService.searchFromEs(questionQueryRequest);
         return ResultUtils.success(questionService.getQuestionVOPage(questionPage, request));
     }
+
+    @PostMapping("/delete/batch")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> batchDeleteQuestions(@RequestBody QuestionBatchDeleteRequest questionBatchDeleteRequest,
+                                                      HttpServletRequest request) {
+        ThrowUtils.throwIf(questionBatchDeleteRequest == null, ErrorCode.PARAMS_ERROR);
+        questionService.batchDeleteQuestions(questionBatchDeleteRequest.getQuestionIdList());
+        return ResultUtils.success(true);
+    }
+
 
 }

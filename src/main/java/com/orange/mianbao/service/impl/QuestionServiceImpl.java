@@ -12,6 +12,7 @@ import com.orange.mianbao.common.ErrorCode;
 import com.orange.mianbao.common.ResultUtils;
 import com.orange.mianbao.constant.CommonConstant;
 import com.orange.mianbao.constant.UserConstant;
+import com.orange.mianbao.exception.BusinessException;
 import com.orange.mianbao.exception.ThrowUtils;
 import com.orange.mianbao.mapper.QuestionMapper;
 import com.orange.mianbao.model.dto.question.QuestionEsDTO;
@@ -29,6 +30,7 @@ import com.orange.mianbao.utils.SqlUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.formula.functions.T;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.search.sort.SortBuilder;
@@ -41,6 +43,7 @@ import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -321,5 +324,25 @@ public class QuestionServiceImpl extends ServiceImpl<QuestionMapper, Question> i
         page.setRecords(resourceList);
         return page;
     }
+
+    /**
+     * 批量删除题目
+     * @param questionIdList
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void batchDeleteQuestions(List<Long> questionIdList) {
+        ThrowUtils.throwIf(CollUtil.isEmpty(questionIdList),ErrorCode.PARAMS_ERROR, "要删除的题目列表为空");
+        for (Long questionId : questionIdList) {
+            boolean result = this.removeById(questionId);
+            ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR, "删除题目失败");
+            // 移除题目题库关系
+            LambdaQueryWrapper<QuestionBankQuestion> lambdaQueryWrapper = Wrappers.lambdaQuery(QuestionBankQuestion.class)
+                    .eq(QuestionBankQuestion::getQuestionId, questionId);
+            result = questionBankQuestionService.remove(lambdaQueryWrapper);
+            ThrowUtils.throwIf(!result,ErrorCode.OPERATION_ERROR, "删除题目题库关联失败");
+        }
+    }
+
 
 }
