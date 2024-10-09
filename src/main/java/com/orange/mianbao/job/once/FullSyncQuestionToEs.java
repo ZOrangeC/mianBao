@@ -22,7 +22,7 @@ import java.util.stream.Collectors;
 // todo 取消注释开启任务
 //@Component
 // todo 取消注释开启任务
-@Component
+//@Component
 @Slf4j
 public class FullSyncQuestionToEs implements CommandLineRunner {
 
